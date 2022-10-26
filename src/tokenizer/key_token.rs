@@ -1,3 +1,4 @@
+use std::any::Any;
 use crate::tokenizer::Token;
 use crate::tokenizer::tokens::TokenType;
 
@@ -13,16 +14,22 @@ impl TokenType {
     }
 }
 
-struct KeyWordToken {
+pub struct KeyWordToken {
     chars: Vec<char>,
     key_word: Vec<char>,
     current_pointer: usize,
     string_representation: String,
 }
 
+impl KeyWordToken {
+    pub fn key_word_chars(&self) -> String {
+        String::from_iter(self.chars.to_owned().into_iter())
+    }
+}
+
 impl Clone for KeyWordToken {
     fn clone(&self) -> Self {
-        let key_word = self.key_word.into_iter().collect();
+        let key_word = self.key_word.to_owned().into_iter().collect();
         KeyWordToken {
             chars: vec![],
             key_word,
@@ -61,5 +68,9 @@ impl Token for KeyWordToken {
 
     fn must_be_completed_now(&self) -> bool {
         self.chars.len() == self.key_word.len()
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
