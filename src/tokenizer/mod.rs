@@ -1,29 +1,46 @@
-pub mod tokens;
-
-
-mod processor;
-mod key_token;
+use crate::tokenizer::token::Token;
 
 mod tests;
+mod key_word;
+mod control_symbol;
+pub mod token;
 
-pub trait Tokenizer {
-    fn parse(&self, str: &str) -> Vec<Box<dyn Token>>;
+#[derive(Clone, PartialEq, Debug)]
+struct TokenizerState {
+    active_tokens: Vec<Token>,
 }
-
-pub trait Token {
-    fn get_type(&self) -> TokenType;
-    fn string_representation(&self) -> &str;
-    fn try_accept_char(&mut self, ch: char) -> bool;
-    fn can_be_completed_now(&self) -> bool;
-    fn can_take_more(&self) -> bool;
-    fn must_be_completed_now(&self) -> bool;
-    fn as_any(&self) -> &dyn Any;
-}
-
-use std::any::Any;
-use crate::tokenizer::processor::Processor;
-use crate::tokenizer::tokens::TokenType;
 
 pub fn new_tokenizer() -> Box<dyn Tokenizer> {
-    Box::new(Processor::new())
+    Box::new(TokenizerState { active_tokens: vec![] })
+}
+
+impl TokenizerState {
+    fn init(&mut self) {
+        self.active_tokens = Token::new_all_possible_tokens();
+    }
+
+    fn process_char(&mut self, ch: &char) -> Option<Token> {
+        None
+    }
+}
+
+pub trait Tokenizer {
+    fn parse(&mut self, str: &str) -> Vec<Token>;
+}
+
+impl Tokenizer for TokenizerState {
+    fn parse(&mut self, str: &str) -> Vec<Token> {
+        self.init();
+
+        let mut results = vec![];
+        str.chars().into_iter().for_each(|ch| {
+            let opt_token = self.process_char(&ch);
+            match opt_token {
+                Some(new_token) => results.push(new_token),
+                _ => {}
+            }
+        });
+
+        results
+    }
 }
