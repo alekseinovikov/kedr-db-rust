@@ -33,7 +33,7 @@ impl TokenizerState {
         }
 
         //remove all not accepting chars
-        self.active_tokens.retain_mut(|token| { !token.try_add_char(ch) });
+        self.active_tokens.retain_mut(|token| { token.try_add_char(ch) });
 
         None
     }

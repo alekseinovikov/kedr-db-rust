@@ -60,11 +60,7 @@ impl Token {
         match self {
             Token::KeyWord { value } => {
                 value.string_representation.push(*ch);
-                if value.string_representation.to_ascii_lowercase() == value.name.to_ascii_lowercase() {
-                    true
-                } else {
-                    false
-                }
+                value.name.to_ascii_lowercase().starts_with(value.string_representation.to_ascii_lowercase().as_str())
             }
             Token::ControlSymbol { value } => {
                 if value.value.to_ascii_lowercase() == ch.to_ascii_lowercase() {
