@@ -13,11 +13,11 @@ pub enum Token {
 }
 
 impl Token {
-    pub(crate) fn new_key_word(key_word: &KeyWordValue) -> Token {
+    pub(crate) fn new_key_word(key_word: &KeyWordValue, representation: &str) -> Token {
         let name = key_word.get_name();
         Token::KeyWord {
             value: KWValue {
-                string_representation: "".to_string(),
+                string_representation: representation.to_string(),
                 name,
             }
         }
@@ -33,7 +33,7 @@ impl Token {
 
         all_key_words()
             .iter()
-            .for_each(|kw| { result.push(Token::new_key_word(kw)) });
+            .for_each(|kw| { result.push(Token::new_key_word(kw, "")) });
 
         all_control_symbols()
             .iter()

@@ -23,6 +23,7 @@ impl TokenizerState {
     }
 
     fn process_char(&mut self, ch: &char) -> Option<Token> {
+        //Check if current char is delimiter
         if DELIMITERS.contains(ch) {
             let found = self.active_tokens.iter()
                 .find(|token| token.can_be_completed())
@@ -34,6 +35,16 @@ impl TokenizerState {
 
         //remove all not accepting chars
         self.active_tokens.retain_mut(|token| { token.try_add_char(ch) });
+
+        //if something must be completed - we complete and refresh the state
+        if self.active_tokens.iter().any(|token| token.must_be_completed()) {
+            let found = self.active_tokens.iter()
+                .find(|token| token.must_be_completed())
+                .map(|token| token.to_owned());
+
+            self.refresh();
+            return found;
+        }
 
         None
     }
